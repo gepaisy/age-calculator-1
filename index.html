@@ -46,6 +46,44 @@
             font-weight: bold;
         }
 
+        /* تنسيق القسم القابل للطي */
+        details.section-collapsible {
+            background-color: var(--brand-color);
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid var(--brand-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        summary {
+            padding: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--title-main);
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        summary::-webkit-details-marker { display: none; }
+
+        summary:after {
+            content: "\f0d7";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            transition: transform 0.3s;
+        }
+
+        details[open] summary:after {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            padding: 0 20px 20px 20px;
+        }
+
         .section {
             background-color: var(--brand-color); 
             padding: 20px;
@@ -163,25 +201,29 @@
 <div class="container">
     <h1><i class="fas fa-graduation-cap"></i> أهلية التسجيل للطلاب المستجدين للعام الدراسي 1448هـ</h1>
 
-    <div class="section">
-        <h2><i class="fas fa-calendar-alt"></i> محول التاريخ الهجري إلى ميلادي</h2>
-        <div class="input-row">
-            <div class="input-item">
-                <span class="dropdown-label">اليوم</span>
-                <select id="hDay"></select>
+    <details class="section-collapsible">
+        <summary>
+            <span><i class="fas fa-calendar-alt"></i> محول التاريخ الهجري إلى ميلادي</span>
+        </summary>
+        <div class="section-content">
+            <div class="input-row">
+                <div class="input-item">
+                    <span class="dropdown-label">اليوم</span>
+                    <select id="hDay"></select>
+                </div>
+                <div class="input-item">
+                    <span class="dropdown-label">الشهر</span>
+                    <select id="hMonth"></select>
+                </div>
+                <div class="input-item">
+                    <span class="dropdown-label">السنة</span>
+                    <select id="hYear"></select>
+                </div>
             </div>
-            <div class="input-item">
-                <span class="dropdown-label">الشهر</span>
-                <select id="hMonth"></select>
-            </div>
-            <div class="input-item">
-                <span class="dropdown-label">السنة</span>
-                <select id="hYear"></select>
-            </div>
+            <button onclick="convertToGregorian()">تحويل إلى ميلادي <i class="fas fa-exchange-alt"></i></button>
+            <div id="convResult" class="result-box"></div>
         </div>
-        <button onclick="convertToGregorian()">تحويل إلى ميلادي <i class="fas fa-exchange-alt"></i></button>
-        <div id="convResult" class="result-box"></div>
-    </div>
+    </details>
 
     <div class="section">
         <h2><i class="fas fa-calculator"></i> حساب الأهلية (ميلادي)</h2>
@@ -230,23 +272,19 @@
         const gMonth = document.getElementById('gMonthCalc');
         const gYear = document.getElementById('gYearCalc');
 
-        // تعبئة الأيام
         for(let i=1; i<=31; i++) {
             hDay.innerHTML += i <= 30 ? `<option value="${i}">${i}</option>` : "";
             gDay.innerHTML += `<option value="${i}">${i}</option>`;
         }
         
-        // تعبئة الشهور
         const monthsH = ["محرم","صفر","ربيع الأول","ربيع الثاني","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"];
         const monthsG = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
         
         monthsH.forEach((m, i) => hMonth.innerHTML += `<option value="${i+1}">${m}</option>`);
         monthsG.forEach((m, i) => gMonth.innerHTML += `<option value="${i+1}">${m}</option>`);
         
-        // تعبئة السنوات الهجرية
         for(let i=1460; i>=1390; i--) hYear.innerHTML += `<option value="${i}">${i}</option>`;
         
-        // تعبئة السنوات الميلادية (عشر سنوات مسبقة وعشر سنوات لاحقة من 2026)
         const currentYear = new Date().getFullYear();
         for(let i = currentYear + 10; i >= currentYear - 10; i--) {
             gYearCalc.innerHTML += `<option value="${i}">${i}</option>`;
@@ -281,7 +319,6 @@
         const y = parseInt(document.getElementById('gYearCalc').value);
         const birthDate = new Date(y, m - 1, d);
         
-        // التواريخ المعيارية للعام الدراسي 1448هـ
         const limitFullSix = new Date(2020, 7, 24);      
         const limitNinetyDays = new Date(2020, 10, 22);   
         const limitKG3 = new Date(2021, 7, 24);          
